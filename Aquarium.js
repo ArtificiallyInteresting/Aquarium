@@ -34,9 +34,15 @@ const draw = () => {
     var context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
     // var ctx = canvas.getContext("2d");
-    context.fillStyle = "#FF0000";
+    var fishImage = document.getElementById("fish");
+    // context.fillStyle = "#FF0000";
     fishes.forEach((fish) => {
-        context.fillRect(fish._x-10,fish._y-10,20,20);
+        // context.fillRect(fish._x-10,fish._y-10,20,20);
+        context.save();
+        context.translate(fish._x, fish._y);//fish._x-15, fish._y-8)
+        context.rotate(fish._angle + Math.PI);
+        context.drawImage(fishImage,-fishImage.width/2,-fishImage.width/2);
+        context.restore();
     });
     
     foods.forEach((food) => {
