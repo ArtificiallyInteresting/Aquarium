@@ -1,54 +1,47 @@
-// const Fish = require('./Fish');
 var fishes = [new Fish(10,10)];
-// var foods = [[100, 10],[100,10],[100,100]];
 var WIDTH = 600;
 var HEIGHT = 400;
+
 var foods = randomInitFoods(30);
-var distanceThreshold = 20;
+var distanceThreshold = 20; //Slight lenience, I'm fine with food getting eaten even if it's a pixel or two away.
 var turns = 0;
 var totalScore = 0;
-// var ctx = document.getElementById("myChart");
-// var chart = new Chart(ctx);
+
+var canvas;
+var context;
+var fishImage;
+
 var chart = null;
 window.onload = function() {
     chart = new CanvasJS.Chart("chartContainer", { 
 		title: {
-			text: "Adding & Updating dataPoints"
+			text: "Average score over time"
 		},
 		data: [
 		{
 			type: "spline",
-			dataPoints: [
-				// { y: 10 },
-				// { y:  4 },
-				// { y: 18 },
-				// { y:  8 }	
+			dataPoints: [	
 			]
-		}
-		]
+		}]
 	});
 	chart.render();	
+    canvas = document.getElementById("Aquarium");
+    context = canvas.getContext('2d');
+    fishImage = document.getElementById("fish");
 }
 const draw = () => {
-    var canvas = document.getElementById("Aquarium");
-    var context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
-    // var ctx = canvas.getContext("2d");
-    var fishImage = document.getElementById("fish");
-    // context.fillStyle = "#FF0000";
     fishes.forEach((fish) => {
-        // context.fillRect(fish._x-10,fish._y-10,20,20);
         context.save();
-        context.translate(fish._x, fish._y);//fish._x-15, fish._y-8)
+        context.translate(fish._x, fish._y);
         context.rotate(fish._angle + Math.PI);
         context.drawImage(fishImage,-fishImage.width/2,-fishImage.width/2);
         context.restore();
     });
     
     foods.forEach((food) => {
-        // context.fillCircle(singleFood[0],singleFood[0],10,10);    
         context.beginPath();
-        context.arc(food[0],food[1], 8, 0, 2 * Math.PI, false);//radius is 8
+        context.arc(food[0],food[1], 8, 0, 2 * Math.PI, false);
         context.fillStyle = 'green';
         context.fill();    
         context.closePath(); 
@@ -61,17 +54,55 @@ const update = () => {
         fish.move(foods);
         var gotFood = contactedFood(fish);
         var wall = againstWall(fish);
-        var score = -1;
+        var score;
         if (gotFood) {
-            score = 100;
+            score = 10;
         } else if (wall) {
-            score = -5;
+            score = -2;
+        } else if (!wall && fish._wasAgainstWall) {
+            score = 1;
+        } else {
+            // var closestFood = distanceToClosestFood(fish, foods);
+            // score = ((1000 - closestFood[0])/100) * angleToClosestFood(fish, closestFood[1]);
+            // var scoreDiff = score - fish._previousScore;
+            // fish._previousScore = score;
+            // //This should really be cleaner. Setting score to previousScore is gross
+            // score = scoreDiff;
+            score = -1;
         }
+        fish._wasAgainstWall = wall;
         // score = contactedFood(fish) ? 100 : -1;
+        fish.processReward(score);
         totalScore += score;
     });
     addToGraph(totalScore/turns);
     draw();
+}
+function distanceToClosestFood(fish, foods) {
+    var lowestDist = 999999999;
+    var closestFood;
+    foods.forEach((food) => {
+        var dx = fish._x - food[0];
+        var dy = fish._y - food[1];
+        var dist = Math.sqrt(Math.abs((dx*dx) + (dy*dy)));
+        if (dist < lowestDist) {
+            lowestDist = dist;
+            closestFood = food;
+        }
+    });
+    return [lowestDist, closestFood];
+}
+function angleToClosestFood(fish, food) {
+    var dx = food[0] - fish._x;
+    var dy = -1 * (fish._y - food[1]);
+    var foodAngle = Math.atan2(dy,dx);// - (Math.PI/2);
+    foodAngle = (foodAngle + (Math.PI*2)) % (Math.PI*2);
+    var fishAngle = (fish._angle + (Math.PI*2)) % (Math.PI*2);
+    var angleDiff = Math.abs(foodAngle - fishAngle);
+    if (angleDiff > Math.PI) {
+        angleDiff = Math.abs(Math.PI*2 - angleDiff);
+    }
+    return 1-(angleDiff/Math.PI);
 }
 function addToGraph(average) {
     chart.options.data[0].dataPoints.push({ y: average});
@@ -102,7 +133,7 @@ function randomInitFoods (numFoods) {
     return newFoods;
 }
 
+//Main game loop
 setInterval(() => {
-    // fish[0]._x += 1;
     update()
 }, 10);
