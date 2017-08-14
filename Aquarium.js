@@ -29,9 +29,9 @@ window.onload = function() {
     context = canvas.getContext('2d');
     fishImage = document.getElementById("fish");
 }
-const draw = () => {
+function draw() {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    fishes.forEach((fish) => {
+    fishes.forEach(function(fish) {
         context.save();
         context.translate(fish._x, fish._y);
         context.rotate(fish._angle + Math.PI);
@@ -39,7 +39,7 @@ const draw = () => {
         context.restore();
     });
     
-    foods.forEach((food) => {
+    foods.forEach(function(food) {
         context.beginPath();
         context.arc(food[0],food[1], 8, 0, 2 * Math.PI, false);
         context.fillStyle = 'green';
@@ -48,30 +48,23 @@ const draw = () => {
     });
 }
 
-const update = () => {
+function update() {
     turns += 1;
-    fishes.forEach((fish) => {
+    fishes.forEach(function(fish) {
         fish.move(foods);
         var gotFood = contactedFood(fish);
         var wall = againstWall(fish);
         var score;
         if (gotFood) {
-            score = 10;
+            score = 100;
         } else if (wall) {
             score = -2;
         } else if (!wall && fish._wasAgainstWall) {
             score = 1;
         } else {
-            // var closestFood = distanceToClosestFood(fish, foods);
-            // score = ((1000 - closestFood[0])/100) * angleToClosestFood(fish, closestFood[1]);
-            // var scoreDiff = score - fish._previousScore;
-            // fish._previousScore = score;
-            // //This should really be cleaner. Setting score to previousScore is gross
-            // score = scoreDiff;
             score = -1;
         }
         fish._wasAgainstWall = wall;
-        // score = contactedFood(fish) ? 100 : -1;
         fish.processReward(score);
         totalScore += score;
     });
@@ -81,7 +74,7 @@ const update = () => {
 function distanceToClosestFood(fish, foods) {
     var lowestDist = 999999999;
     var closestFood;
-    foods.forEach((food) => {
+    foods.forEach(function(food) {
         var dx = fish._x - food[0];
         var dy = fish._y - food[1];
         var dist = Math.sqrt(Math.abs((dx*dx) + (dy*dy)));
@@ -95,7 +88,7 @@ function distanceToClosestFood(fish, foods) {
 function angleToClosestFood(fish, food) {
     var dx = food[0] - fish._x;
     var dy = -1 * (fish._y - food[1]);
-    var foodAngle = Math.atan2(dy,dx);// - (Math.PI/2);
+    var foodAngle = Math.atan2(dy,dx);
     foodAngle = (foodAngle + (Math.PI*2)) % (Math.PI*2);
     var fishAngle = (fish._angle + (Math.PI*2)) % (Math.PI*2);
     var angleDiff = Math.abs(foodAngle - fishAngle);
@@ -111,8 +104,8 @@ function addToGraph(average) {
     }
 }
 
-const contactedFood = (fish) => {
-    return foods.some((food) => {
+function contactedFood(fish) {
+    return foods.some(function(food) {
         if (Math.abs(food[0] - fish._x) < distanceThreshold && Math.abs(food[1] - fish._y) < distanceThreshold) {
             food[0] = Math.floor( Math.random() * WIDTH ) ;
             food[1] = Math.floor( Math.random() * HEIGHT ) ;
@@ -121,19 +114,25 @@ const contactedFood = (fish) => {
     });
 }
 
-const againstWall = (fish) => {
+function againstWall (fish) {
     return fish._x <= 1 || fish._x >= WIDTH-1 || fish._y <= 1 || fish._y >= HEIGHT-1;
 }
 
 function randomInitFoods (numFoods) {
     newFoods = [];
     for(i = 0; i < numFoods; i++) {
-        newFoods.push([Math.floor( Math.random() * WIDTH ), Math.floor( Math.random() * HEIGHT )]);
+        //Don't want food to start right next to the fish.
+        //It ends up causing a bad outlier on the graph .
+        do {
+            var x = Math.floor( Math.random() * WIDTH );
+            var y = Math.floor( Math.random() * HEIGHT );
+        } while (Math.sqrt(x*x + y*y) < 300);
+        newFoods.push([x, y]);
     }
     return newFoods;
 }
 
 //Main game loop
-setInterval(() => {
+setInterval(function() {
     update()
 }, 10);
