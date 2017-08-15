@@ -35,7 +35,7 @@ class Fish {
         var observations = []
         var self = this;
         this._observationAngles.forEach(function(angle) {
-            var smallestDistance = 100;
+            var smallestDistance = 250;
             foods.forEach(function(food) {
                 var points = [];
                 var myX = self._x;
@@ -56,7 +56,7 @@ class Fish {
                 }
             }); 
             //We want all inputs scaled from 0 to 1
-            observations.push(smallestDistance/100);
+            observations.push(smallestDistance/250);
         });
         this._observationAngles.forEach(function(angle) {
             var currentPosition = [self._x, self._y];
