@@ -16,10 +16,10 @@ class AI {
         //I'm mostly just using the default options here.
         var opt = {};
         opt.temporal_window = temporal_window;
-        opt.experience_size = 20000;
+        opt.experience_size = 20000;//20000
         opt.start_learn_threshold = 1000;
-        opt.gamma = 0.7;
-        opt.learning_steps_total = 50000;
+        opt.gamma = 0.7;//0.7
+        opt.learning_steps_total = 50000;//50000
         opt.learning_steps_burnin = 3000;
         opt.epsilon_min = 0.05;
         opt.epsilon_test_time = 0.05;

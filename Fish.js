@@ -6,7 +6,8 @@ class Fish {
         this._speed = 2;
         this._fishBrain = new AI();
         this._observationAngles = [-.5,-.4,-.3,-.2,-.1,0,.1,.2,.3,.4,.5];
-        this._actions = [-.2, -.1, 0, .1, .2];
+        // this._actions = [-.2, -.1, 0, .1, .2];
+        this._actions = [0, -.1, .1, -.2, .2];
     }
     move(foods) {
         var action = this._fishBrain.getAction(this.getObservation(foods));

@@ -62,7 +62,7 @@ function update() {
         } else if (!wall && fish._wasAgainstWall) {
             score = 1;
         } else {
-            score = -.1;
+            score = -1;
         }
         fish._wasAgainstWall = wall;
         fish.processReward(score);
