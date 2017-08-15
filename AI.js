@@ -2,7 +2,7 @@ class AI {
     constructor() {
         var num_inputs = 22; // 11 eyes, each one can see a wall and food
         var num_actions = 5; // 5 possible angles agent can turn
-        var temporal_window = 1; // amount of temporal memory. 0 = agent lives in-the-moment :)
+        var temporal_window = 1;
         var network_size = num_inputs*temporal_window + num_actions*temporal_window + num_inputs;
 
         var layer_defs = [];
@@ -16,10 +16,10 @@ class AI {
         //I'm mostly just using the default options here.
         var opt = {};
         opt.temporal_window = temporal_window;
-        opt.experience_size = 20000;//20000
+        opt.experience_size = 20000;
         opt.start_learn_threshold = 1000;
-        opt.gamma = 0.7;//0.7
-        opt.learning_steps_total = 50000;//50000
+        opt.gamma = 0.7;
+        opt.learning_steps_total = 50000;
         opt.learning_steps_burnin = 3000;
         opt.epsilon_min = 0.05;
         opt.epsilon_test_time = 0.05;
