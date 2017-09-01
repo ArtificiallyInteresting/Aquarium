@@ -1,5 +1,7 @@
+'use strict';
 class Fish {
-    constructor(x, y) {
+    
+    constructor(x, y, id) {
         this._x = x;
         this._y = y;
         this._angle = 0; //Starting angle. 0 is to the right. Positive angle is turning clockwise
@@ -7,6 +9,8 @@ class Fish {
         this._fishBrain = new AI();
         this._observationAngles = [-.5,-.4,-.3,-.2,-.1,0,.1,.2,.3,.4,.5];
         this._actions = [0, -.1, .1, -.2, .2];
+        this._id = id;
+        this._totalScore = 0;
     }
     move(foods) {
         var action = this._fishBrain.getAction(this.getObservation(foods));
@@ -106,7 +110,7 @@ function distance(dx, dy) {
 
 //Gets the closest point (px, py) to the line starting at x,y and extending out towards angle
 //Shamelessly stolen from github, no idea how this works.
-closestLinePoint = function( px, py, x, y, angle ){
+function closestLinePoint( px, py, x, y, angle ){
     angle += (Math.PI);
     angle = (angle * 180 / Math.PI);
 	var tg = ( ( angle %= 360 ) < 0 && ( angle += 180 ), Math.tan( -angle * Math.PI / 180 ) );
